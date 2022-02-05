@@ -16,52 +16,83 @@ class Robot : public frc::TimedRobot {
 
 
 //Talon drive motors initialization and groupings
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX leftf{3};  //left back motor is a talon
-frc::SpeedControllerGroup leftDrive{leftf};          //combine front and back motors
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX left{3};  //left motor is a talon
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX right{6};   //right motor is a talon
 
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX rightf{6};   //right front motor is a talon
 
-frc::SpeedControllerGroup rightDrive{rightf};       //combine front and back motors
-
-frc::DifferentialDrive tankDrive{leftDrive, rightDrive};    //make left side and right side into one drive - tank drive
+frc::DifferentialDrive tankDrive{left, right};    //make left side and right side into one drive - tank drive
 
 
 //Talon mechanism motors initialization
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX intake{1};
-//ctre::phoenix::motorcontrol::can::WPI_TalonSRX outtake{3};
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX shooter{0};
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX climberDown{2};
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber{2};
 
 
 //SparkMax and Reg spark initialization
-frc::PWMSparkMax index2{8};
-//frc::PWMSparkMax climberUp{10};
+frc::PWMSparkMax index2{8};  //the number in the bracket is the port it's connected to in Roborio
+//frc::PWMSparkMax climberUp{9};
 
 //Joysticks instantiation
-frc::Joystick drivePad{0};      //port 0 is a gamepad for drive
-frc::GenericHID mechPad{1};       //port 1 is a gamepad for mechanisms
+frc::Joystick drivePad1{0};    //port 0 is a joystick for drive
+frc::Joystick drivePad2{1};     //port 1 is joystick for drive
+frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
 
 public:
 void RobotInit() override {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    leftDrive.SetInverted(true);
-   // shooter.Set(PercentOutput, 1);
+    left.SetInverted(true);
   }
 
 void TeleopPeriodic() override {
 
     // Drive with tank style using drivePad
-    tankDrive.TankDrive(drivePad.GetRawAxis(1), drivePad.GetRawAxis(3));  //axis 1 and 3 from drivePad are to gauge the drive
+    tankDrive.TankDrive(drivePad1.GetRawAxis(1), drivePad2.GetRawAxis(1));  //axis 1 and 3 from drivePad are to gauge the drive
 
     //attach mechanisms to mechpad
-    //climberUp.Set(mechPad.GetPOV(0));
-    //climberDown.Set(mechPad.GetPOV(180));
     index2.Set(mechPad.GetRawButton(1));
-    intake.Set(mechPad.GetRawButton(6));
-    //outtake.Set(mechPad.GetRawButton(5));
-    shooter.Set(mechPad.GetRawButton(8));
+
+  
+    if(mechPad.GetRawButton(8)){
+
+      shooter.Set(.50); //intake
+
+    }else{
+
+      shooter.Set(0);
+      
+    }
+
+
+
+    if(mechPad.GetRawButton(6)){
+
+      intake.Set(.75); //intake
+
+    }else if(mechPad.GetRawButton(5)){
+
+      intake.Set(-.75);   //outtake
+
+    }else{
+
+      intake.Set(0);
+      
+    }
+
+    if(mechPad.GetPOV(0)){
+
+      climber.Set(1);
+
+    }else if(mechPad.GetPOV(180)){
+
+      climber.Set(-1);
+
+    }else{
+
+      climber.Set(0);
+    }
 
   }
 };
