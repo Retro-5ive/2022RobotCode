@@ -53,20 +53,47 @@ void TeleopPeriodic() override {
 
     //attach mechanisms to mechpad
     index2.Set(mechPad.GetRawButton(1));
-
+    shooterFunction();
+    climberFunction();
+    intakeFunction();
   
+
+
+
+  }
+
+
+
+
+
+  void shooterFunction(){
     if(mechPad.GetRawButton(8)){
 
-      shooter.Set(.50); //intake
+      shooter.Set(.25); //intake
 
     }else{
 
       shooter.Set(0);
       
     }
+  }
 
+  void climberFunction(){
+      if(mechPad.GetPOV(0)){
 
+      climber.Set(1);
 
+    }else if(mechPad.GetPOV(180)){
+
+      climber.Set(-1);
+
+    }else{
+
+      climber.Set(0);
+    }
+  }
+
+  void intakeFunction(){
     if(mechPad.GetRawButton(6)){
 
       intake.Set(.75); //intake
@@ -80,22 +107,9 @@ void TeleopPeriodic() override {
       intake.Set(0);
       
     }
-
-    if(mechPad.GetPOV(0)){
-
-      climber.Set(1);
-
-    }else if(mechPad.GetPOV(180)){
-
-      climber.Set(-1);
-
-    }else{
-
-      climber.Set(0);
-    }
-
   }
-};
+}
+;
 
 
 #ifndef RUNNING_FRC_TESTS
