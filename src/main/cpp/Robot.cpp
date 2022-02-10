@@ -9,6 +9,12 @@
 #include <frc/Joystick.h> 
 #include "rev/SparkMaxPIDController.h"
 #include <frc/motorcontrol/PWMSparkMax.h>
+#include "frc/smartdashboard/Smartdashboard.h"
+#include "networktables/NetworkTable.h"
+#include "networktables/NetworkTableInstance.h"
+#include "networktables/NetworkTableEntry.h"
+#include "networktables/NetworkTableValue.h"
+#include "wpi/span.h"
 
 
 
@@ -18,7 +24,6 @@ class Robot : public frc::TimedRobot {
 //Talon drive motors initialization and groupings
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX left{3};  //left motor is a talon
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX right{6};   //right motor is a talon
-
 
 frc::DifferentialDrive tankDrive{left, right};    //make left side and right side into one drive - tank drive
 
@@ -31,12 +36,19 @@ ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber{2};
 
 //SparkMax and Reg spark initialization
 frc::PWMSparkMax index2{8};  //the number in the bracket is the port it's connected to in Roborio
-//frc::PWMSparkMax climberUp{9};
+
 
 //Joysticks instantiation
 frc::Joystick drivePad1{0};    //port 0 is a joystick for drive
 frc::Joystick drivePad2{1};     //port 1 is joystick for drive
 frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
+
+
+//limelight initialization stuffs
+double targetOffsetAngle_Horizontal = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx",0.0);
+double targetOffsetAngle_Vertical = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty",0.0);
+double targetArea = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta",0.0);
+double targetSkew = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts",0.0);
 
 public:
 void RobotInit() override {
@@ -56,60 +68,58 @@ void TeleopPeriodic() override {
     shooterFunction();
     climberFunction();
     intakeFunction();
-  
-
-
-
   }
 
 
 
-
-
-  void shooterFunction(){
-    if(mechPad.GetRawButton(8)){
+void shooterFunction(){
+  if(mechPad.GetRawButton(8)){
 
       shooter.Set(.25); //intake
 
-    }else{
+  }else{
 
-      shooter.Set(0);
+    shooter.Set(0);
       
-    }
-  }
-
-  void climberFunction(){
-      if(mechPad.GetPOV(0)){
-
-      climber.Set(1);
-
-    }else if(mechPad.GetPOV(180)){
-
-      climber.Set(-1);
-
-    }else{
-
-      climber.Set(0);
-    }
-  }
-
-  void intakeFunction(){
-    if(mechPad.GetRawButton(6)){
-
-      intake.Set(.75); //intake
-
-    }else if(mechPad.GetRawButton(5)){
-
-      intake.Set(-.75);   //outtake
-
-    }else{
-
-      intake.Set(0);
-      
-    }
   }
 }
-;
+
+void climberFunction(){
+    if(mechPad.GetPOV(0)){
+
+    climber.Set(1);
+
+  }else if(mechPad.GetPOV(180)){
+
+    climber.Set(-1);
+
+  }else{
+
+    climber.Set(0);
+  }
+}
+
+void intakeFunction(){
+  if(mechPad.GetRawButton(6)){
+
+    intake.Set(.75); //intake
+
+  }else if(mechPad.GetRawButton(5)){
+
+    intake.Set(-.75);   //outtake
+
+  }else{
+
+    intake.Set(0);
+    
+  }
+}
+
+};
+
+
+
+
 
 
 #ifndef RUNNING_FRC_TESTS
