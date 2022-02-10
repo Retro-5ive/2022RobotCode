@@ -9,11 +9,12 @@
 #include <frc/Joystick.h> 
 #include "rev/SparkMaxPIDController.h"
 #include <frc/motorcontrol/PWMSparkMax.h>
-
+#include <frc/Timer.h>
 
 
 class Robot : public frc::TimedRobot {      
 
+double shooterSpeed = 0.25;
 
 //Talon drive motors initialization and groupings
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX left{3};  //left motor is a talon
@@ -37,16 +38,34 @@ frc::Joystick drivePad1{0};    //port 0 is a joystick for drive
 frc::Joystick drivePad2{1};     //port 1 is joystick for drive
 frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
 
+//timer
+ frc::Timer timer;
 
 public:
-void RobotInit() override {
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
+
+void RobotInit() override { //This runs on initialization of the robot during teleop
+
     left.SetInverted(true);
+    timer.Reset();
+    timer.Start();
   }
 
-void TeleopPeriodic() override {
+
+void AutonomousPeriodic() override{ // This is called periodically while the robot is in autonomous mode
+      units::time::second_t timenow = timer.Get();
+      units::time::second_t two;
+      //shooter first for entire time
+      shooter.Set(shooterSpeed);
+      //2 seconds later run index to shoot ball
+      //go forward then left a little bit while running intake and run again
+      //during, run index 
+      //turn right same amount as left turn then drive backwards up against hub
+      //2 seconds later run index to shoot ball
+
+  }
+
+
+void TeleopPeriodic() override {  //this runs periodically throughout teleop
 
     // Drive with tank style using drivePad
     tankDrive.TankDrive(drivePad1.GetRawAxis(1), drivePad2.GetRawAxis(1));  //axis 1 and 3 from drivePad are to gauge the drive
@@ -63,7 +82,7 @@ void TeleopPeriodic() override {
 void shooterFunction(){
   if(mechPad.GetRawButton(8)){
 
-      shooter.Set(.25); //intake
+      shooter.Set(shooterSpeed); //intake
 
   }else{
 
