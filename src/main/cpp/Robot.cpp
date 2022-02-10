@@ -9,12 +9,6 @@
 #include <frc/Joystick.h> 
 #include "rev/SparkMaxPIDController.h"
 #include <frc/motorcontrol/PWMSparkMax.h>
-#include "frc/smartdashboard/Smartdashboard.h"
-#include "networktables/NetworkTable.h"
-#include "networktables/NetworkTableInstance.h"
-#include "networktables/NetworkTableEntry.h"
-#include "networktables/NetworkTableValue.h"
-#include "wpi/span.h"
 
 
 
@@ -43,12 +37,6 @@ frc::Joystick drivePad1{0};    //port 0 is a joystick for drive
 frc::Joystick drivePad2{1};     //port 1 is joystick for drive
 frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
 
-
-//limelight initialization stuffs
-double targetOffsetAngle_Horizontal = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("tx",0.0);
-double targetOffsetAngle_Vertical = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ty",0.0);
-double targetArea = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ta",0.0);
-double targetSkew = nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber("ts",0.0);
 
 public:
 void RobotInit() override {
