@@ -10,6 +10,7 @@
 #include "rev/SparkMaxPIDController.h"
 #include <frc/motorcontrol/PWMSparkMax.h>
 #include <frc/Timer.h>
+#include <frc/SpeedControllerGroup.h>
 
 
 class Robot : public frc::TimedRobot {      
@@ -17,8 +18,13 @@ class Robot : public frc::TimedRobot {
 double shooterSpeed = 0.25;
 
 //Talon drive motors initialization and groupings
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX left{3};  //left motor is a talon
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX right{6};   //right motor is a talon
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX leftf{2};  //left motor is a talon
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX leftb{4}; 
+frc::SpeedControllerGroup left{leftf, leftb};
+
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX rightf{1};   //right motor is a talon
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX rightb{5};
+frc::SpeedControllerGroup right{rightf, rightb};
 
 frc::DifferentialDrive tankDrive{left, right};    //make left side and right side into one drive - tank drive
 
@@ -50,11 +56,12 @@ void RobotInit() override { //This runs on initialization of the robot during te
     left.SetInverted(true);
     timer.Reset();
     timer.Start();
-    
+
   }
 
 
 void AutonomousPeriodic() override{ // This is called periodically while the robot is in autonomous mode.
+
   timer.GetFPGATimestamp();
 
   shooter.Set(shooterSpeed);    //shooter is running through entire autonomous period
