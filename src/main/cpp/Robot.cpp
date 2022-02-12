@@ -30,7 +30,7 @@ ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber{2};
 
 
 //SparkMax and Reg spark initialization
-frc::PWMSparkMax index2{8};  //the number in the bracket is the port it's connected to in Roborio
+frc::PWMSparkMax index{8};  //the number in the bracket is the port it's connected to in Roborio
 
 
 //Joysticks instantiation
@@ -40,6 +40,8 @@ frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
 
 //timer
  frc::Timer timer;
+
+
 
 public:
 
@@ -52,11 +54,22 @@ void RobotInit() override { //This runs on initialization of the robot during te
 
 
 void AutonomousPeriodic() override{ // This is called periodically while the robot is in autonomous mode
-      units::time::second_t timenow = timer.Get();
-      units::time::second_t two;
-      //shooter first for entire time
-      shooter.Set(shooterSpeed);
-      //2 seconds later run index to shoot ball
+      timer.GetFPGATimestamp();
+
+      shooter.Set(shooterSpeed);    //shooter is running through entire autonomous period
+      
+      if(timer.HasElapsed(units::second_t(2))){
+        index.Set(1.0);   //2 seconds later run index to shoot ball
+      }else if(timer.HasElapsed(units::second_t(4))){
+        index.Set(0);
+        tankDrive.TankDrive(1, 1);
+      }else if(timer.HasElapsed(units::second_t(6))){
+        tankDrive.TankDrive(1, 0);
+      }else if(timer.HasElapsed(units::second_t(6.5))){
+        tankDrive.Tank
+      }
+      
+      
       //go forward then left a little bit while running intake and run again
       //during, run index 
       //turn right same amount as left turn then drive backwards up against hub
@@ -71,7 +84,7 @@ void TeleopPeriodic() override {  //this runs periodically throughout teleop
     tankDrive.TankDrive(drivePad1.GetRawAxis(1), drivePad2.GetRawAxis(1));  //axis 1 and 3 from drivePad are to gauge the drive
 
     //attach mechanisms to mechpad
-    index2.Set(mechPad.GetRawButton(1));
+    index.Set(mechPad.GetRawButton(1));
     shooterFunction();
     climberFunction();
     intakeFunction();
