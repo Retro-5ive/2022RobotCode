@@ -53,59 +53,59 @@ void RobotInit() override { //This runs on initialization of the robot during te
   }
 
 
-void AutonomousPeriodic() override{ // This is called periodically while the robot is in autonomous mode
-      timer.GetFPGATimestamp();
+void AutonomousPeriodic() override{ // This is called periodically while the robot is in autonomous mode.
+  timer.GetFPGATimestamp();
 
-      shooter.Set(shooterSpeed);    //shooter is running through entire autonomous period
-      
-      if(timer.HasElapsed(units::second_t(2))){
+  shooter.Set(shooterSpeed);    //shooter is running through entire autonomous period
+  
+  if(timer.HasElapsed(units::second_t(2))){
 
-        index.Set(1.0);   //2 seconds later run index to shoot ball
+    index.Set(1.0);   //2 seconds later run index to shoot ball
 
-      }else if(timer.HasElapsed(units::second_t(4))){
+  }else if(timer.HasElapsed(units::second_t(4))){
 
-        index.Set(0);
-        tankDrive.TankDrive(1, 1);    //4 seconds after start later stop index then run robot forward(full speed) for 1 second
+    index.Set(0);
+    tankDrive.TankDrive(1, 1);    //4 seconds after start stop index then run robot forward(full speed) for 1 second
 
-      }else if(timer.HasElapsed(units::second_t(5))){
+  }else if(timer.HasElapsed(units::second_t(5))){
 
-        tankDrive.TankDrive(0, 1);    //5 seconds after start turn robot left for half a second
+    tankDrive.TankDrive(0, 1);    //5 seconds after start turn robot left for half a second
 
-      }else if(timer.HasElapsed(units::second_t(5.5))){
+  }else if(timer.HasElapsed(units::second_t(5.5))){
 
-        intake.Set(1);
-        tankDrive.TankDrive(1, 1);    //5.5 seconds after start turn on intake and run robot forward for 1 second
+    intake.Set(1);
+    tankDrive.TankDrive(1, 1);    //5.5 seconds after start turn on intake and run robot forward for 1 second
 
-      }else if(timer.HasElapsed(units::second_t(6.5))){
+  }else if(timer.HasElapsed(units::second_t(6.5))){
 
-        tankDrive.TankDrive(-1, -1);
-        intake.Set(0);    //6.5 seconds after start run robot backwards for a second and turn off intake
+    tankDrive.TankDrive(-1, -1);
+    intake.Set(0);    //6.5 seconds after start run robot backwards for a second and turn off intake
 
-      }else if(timer.HasElapsed(units::second_t(7.5))){
+  }else if(timer.HasElapsed(units::second_t(7.5))){
 
-        tankDrive.TankDrive(0, -1);   //7.5 seconds after start turn robot back to starting direction for half a second
+    tankDrive.TankDrive(0, -1);   //7.5 seconds after start turn robot back to starting direction for half a second
 
-      }else if(timer.HasElapsed(units::second_t(8))){
+  }else if(timer.HasElapsed(units::second_t(8))){
 
-        tankDrive.TankDrive(-1, -1);    //8 seconds after start run robot backward(full speed) for 1 second
+    tankDrive.TankDrive(-1, -1);    //8 seconds after start run robot backward(full speed) for 1 second
 
-      }else if(timer.HasElapsed(units::second_t(9))){
+  }else if(timer.HasElapsed(units::second_t(9))){
 
-        tankDrive.TankDrive(0, 0);
-        index.Set(1);   //9 seconds after start stop robot and run index
+    tankDrive.TankDrive(0, 0);
+    index.Set(1);   //9 seconds after start stop robot and run index
 
-      }else if(timer.HasElapsed(units::second_t(11))){
+  }else if(timer.HasElapsed(units::second_t(11))){
 
-        index.Set(0);   //11 seconds after start stop index
-        
-      }
-      
-      shooter.Set(0);
+    index.Set(0);   //11 seconds after start stop index
 
-      //go forward then left a little bit while running intake and run again
-      //during, run index 
-      //turn right same amount as left turn then drive backwards up against hub
-      //2 seconds later run index to shoot ball
+  }
+  
+  shooter.Set(0);
+
+  //go forward then left a little bit while running intake and run again
+  //during, run index 
+  //turn right same amount as left turn then drive backwards up against hub
+  //2 seconds later run index to shoot ball
 
   }
 
@@ -122,9 +122,8 @@ void TeleopPeriodic() override {  //this runs periodically throughout teleop
     intakeFunction();
   }
 
-
-
 void shooterFunction(){
+
   if(mechPad.GetRawButton(8)){
 
       shooter.Set(shooterSpeed); //intake
@@ -137,6 +136,7 @@ void shooterFunction(){
 }
 
 void climberFunction(){
+
     if(mechPad.GetPOV(0)){
 
     climber.Set(1);
@@ -152,6 +152,7 @@ void climberFunction(){
 }
 
 void intakeFunction(){
+
   if(mechPad.GetRawButton(6)){
 
     intake.Set(.75); //intake
