@@ -50,6 +50,7 @@ void RobotInit() override { //This runs on initialization of the robot during te
     left.SetInverted(true);
     timer.Reset();
     timer.Start();
+    
   }
 
 
