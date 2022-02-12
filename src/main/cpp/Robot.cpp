@@ -59,17 +59,49 @@ void AutonomousPeriodic() override{ // This is called periodically while the rob
       shooter.Set(shooterSpeed);    //shooter is running through entire autonomous period
       
       if(timer.HasElapsed(units::second_t(2))){
+
         index.Set(1.0);   //2 seconds later run index to shoot ball
+
       }else if(timer.HasElapsed(units::second_t(4))){
+
         index.Set(0);
-        tankDrive.TankDrive(1, 1);
-      }else if(timer.HasElapsed(units::second_t(6))){
-        tankDrive.TankDrive(1, 0);
+        tankDrive.TankDrive(1, 1);    //4 seconds after start later stop index then run robot forward(full speed) for 1 second
+
+      }else if(timer.HasElapsed(units::second_t(5))){
+
+        tankDrive.TankDrive(0, 1);    //5 seconds after start turn robot left for half a second
+
+      }else if(timer.HasElapsed(units::second_t(5.5))){
+
+        intake.Set(1);
+        tankDrive.TankDrive(1, 1);    //5.5 seconds after start turn on intake and run robot forward for 1 second
+
       }else if(timer.HasElapsed(units::second_t(6.5))){
-        tankDrive.Tank
+
+        tankDrive.TankDrive(-1, -1);
+        intake.Set(0);    //6.5 seconds after start run robot backwards for a second and turn off intake
+
+      }else if(timer.HasElapsed(units::second_t(7.5))){
+
+        tankDrive.TankDrive(0, -1);   //7.5 seconds after start turn robot back to starting direction for half a second
+
+      }else if(timer.HasElapsed(units::second_t(8))){
+
+        tankDrive.TankDrive(-1, -1);    //8 seconds after start run robot backward(full speed) for 1 second
+
+      }else if(timer.HasElapsed(units::second_t(9))){
+
+        tankDrive.TankDrive(0, 0);
+        index.Set(1);   //9 seconds after start stop robot and run index
+
+      }else if(timer.HasElapsed(units::second_t(11))){
+
+        index.Set(0);   //11 seconds after start stop index
+        
       }
       
-      
+      shooter.Set(0);
+
       //go forward then left a little bit while running intake and run again
       //during, run index 
       //turn right same amount as left turn then drive backwards up against hub
