@@ -11,6 +11,7 @@
 #include <frc/motorcontrol/PWMSparkMax.h>
 #include <frc/Timer.h>
 #include <frc/SpeedControllerGroup.h>
+#include <rev/CANSparkMax.h>
 
 
 class Robot : public frc::TimedRobot {      
@@ -18,13 +19,15 @@ class Robot : public frc::TimedRobot {
 double shooterSpeed = 0.25;
 
 //Talon drive motors initialization and groupings
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX leftf{2};  //left motor is a talon
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX leftb{4}; 
-frc::SpeedControllerGroup left{leftf, leftb};
+static const int leftFID = 2, leftBID = 4, rightFID = 1, rightBID = 5;
+rev::CANSparkMax  m_leftF{leftFID, rev::CANSparkMax::MotorType::kBrushless};
+rev::CANSparkMax  m_leftB{leftBID, rev::CANSparkMax::MotorType::kBrushless};
+frc::SpeedControllerGroup left{m_leftF, m_leftB};
 
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX rightf{1};   //right motor is a talon
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX rightb{5};
-frc::SpeedControllerGroup right{rightf, rightb};
+rev::CANSparkMax  m_rightF{rightFID, rev::CANSparkMax::MotorType::kBrushless};
+rev::CANSparkMax  m_rightB{rightBID, rev::CANSparkMax::MotorType::kBrushless};
+frc::SpeedControllerGroup right{m_rightF, m_rightB};
+
 
 frc::DifferentialDrive tankDrive{left, right};    //make left side and right side into one drive - tank drive
 
