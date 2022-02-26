@@ -36,6 +36,7 @@ frc::DifferentialDrive tankDrive{left, right};    //make left side and right sid
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX intake{1};
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX shooter{0};
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber{2};
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber2{3};
 
 
 //SparkMax and Reg spark initialization
@@ -43,8 +44,8 @@ frc::PWMSparkMax index{8};  //the number in the bracket is the port it's connect
 
 
 //Joysticks instantiation
-frc::Joystick drivePad1{0};    //port 0 is a joystick for drive
-frc::Joystick drivePad2{1};     //port 1 is joystick for drive
+frc::Joystick leftStick{0};    //port 0 is a joystick for drive
+frc::Joystick rightStick{1};     //port 1 is joystick for drive
 frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
 
 //timer
@@ -124,13 +125,14 @@ void AutonomousPeriodic() override{ // This is called periodically while the rob
 void TeleopPeriodic() override {  //this runs periodically throughout teleop
 
     // Drive with tank style using drivePad
-    tankDrive.TankDrive(drivePad1.GetRawAxis(1), drivePad2.GetRawAxis(1));  //axis 1 and 3 from drivePad are to gauge the drive
+    tankDrive.TankDrive(leftStick.GetRawAxis(1), rightStick.GetRawAxis(1));  //axis 1 and 3 from drivePad are to gauge the drive
+    intake.Set(leftStick.GetRawAxis(1));
 
     //attach mechanisms to mechpad
-    index.Set(mechPad.GetRawButton(1));
+    index.Set(mechPad.GetRawButton(1));    //both in and out so button 1 for in button 3 for out
     shooterFunction();
     climberFunction();
-    intakeFunction();
+    climber2Function();
   }
 
 void shooterFunction(){
@@ -146,13 +148,13 @@ void shooterFunction(){
   }
 }
 
-void climberFunction(){
+void climberFunction(){ 
 
-    if(mechPad.GetPOV(0)){
-
+    if(rightStick.GetRawButton(1)){ //rightstick button 1
+ 
     climber.Set(1);
 
-  }else if(mechPad.GetPOV(180)){
+  }else if(leftStick.GetRawButton(1)){  //leftstick button 1
 
     climber.Set(-1);
 
@@ -162,22 +164,22 @@ void climberFunction(){
   }
 }
 
-void intakeFunction(){
+void climber2Function(){
 
-  if(mechPad.GetRawButton(6)){
+    if(rightStick.GetRawButton(2)){    //rightstick button 2
 
-    intake.Set(.75); //intake
+    climber2.Set(0.5);
 
-  }else if(mechPad.GetRawButton(5)){
+  }else if(leftStick.GetRawButton(2)){    //leftstick button 2
 
-    intake.Set(-.75);   //outtake
+    climber2.Set(-0.5);
 
   }else{
 
-    intake.Set(0);
-    
+    climber2.Set(0);
   }
 }
+
 
 };
 
