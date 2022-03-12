@@ -10,7 +10,7 @@
 #include "rev/SparkMaxPIDController.h"
 #include <frc/motorcontrol/PWMSparkMax.h>
 #include <frc/Timer.h>
-#include <frc/SpeedControllerGroup.h>
+
 #include <rev/CANSparkMax.h>
 
 
@@ -19,7 +19,7 @@ class Robot : public frc::TimedRobot {
 double shooterSpeed = 0.25;
 
 //Talon drive motors initialization and groupings
-static const int leftFID = 2, leftBID = 4, rightFID = 1, rightBID = 5;
+static const int leftFID = 9, leftBID = 10, rightFID = 8, rightBID = 14;
 rev::CANSparkMax  m_leftF{leftFID, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax  m_leftB{leftBID, rev::CANSparkMax::MotorType::kBrushless};
 frc::SpeedControllerGroup left{m_leftF, m_leftB};
@@ -36,11 +36,8 @@ frc::DifferentialDrive tankDrive{left, right};    //make left side and right sid
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX intake{1};
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX shooter{0};
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber{2};
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber2{3};
-
-
-//SparkMax and Reg spark initialization
-frc::PWMSparkMax index{8};  //the number in the bracket is the port it's connected to in Roborio
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber2{7};
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX index{4};
 
 
 //Joysticks instantiation
@@ -52,16 +49,16 @@ frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
  frc::Timer timer;
 
 
-
 public:
 
 void RobotInit() override { //This runs on initialization of the robot during teleop
 
-    left.SetInverted(true);
+    m_rightB.SetInverted(true);
     timer.Reset();
     timer.Start();
 
   }
+
 
 
 void AutonomousPeriodic() override{ // This is called periodically while the robot is in autonomous mode.
@@ -125,11 +122,11 @@ void AutonomousPeriodic() override{ // This is called periodically while the rob
 void TeleopPeriodic() override {  //this runs periodically throughout teleop
 
     // Drive with tank style using drivePad
-    tankDrive.TankDrive(leftStick.GetRawAxis(1), rightStick.GetRawAxis(1));  //axis 1 and 3 from drivePad are to gauge the drive
-    intake.Set(leftStick.GetRawAxis(1));
+    tankDrive.TankDrive(leftStick.GetRawAxis(1), rightStick.GetRawAxis(1));  //axis 1 and 1 from drivePad are to gauge the drive
+    intake.Set(mechPad.GetRawAxis(1));
 
     //attach mechanisms to mechpad
-    index.Set(mechPad.GetRawButton(1));    //both in and out so button 1 for in button 3 for out
+    indexFunction();    //both in and out so button 1 for in button 3 for out
     shooterFunction();
     climberFunction();
     climber2Function();
@@ -139,7 +136,7 @@ void shooterFunction(){
 
   if(mechPad.GetRawButton(8)){
 
-      shooter.Set(shooterSpeed); //intake
+      shooter.Set(1);
 
   }else{
 
@@ -147,6 +144,24 @@ void shooterFunction(){
       
   }
 }
+
+void indexFunction(){
+
+  if(mechPad.GetRawButton(1)){
+
+      index.Set(1);
+
+  }else if (mechPad.GetRawButton(3)){
+
+    index.Set(-1);
+      
+  }else{
+
+    index.Set(0);
+
+  }
+}
+
 
 void climberFunction(){ 
 
@@ -168,11 +183,11 @@ void climber2Function(){
 
     if(rightStick.GetRawButton(2)){    //rightstick button 2
 
-    climber2.Set(0.5);
+    climber2.Set(1);
 
   }else if(leftStick.GetRawButton(2)){    //leftstick button 2
 
-    climber2.Set(-0.5);
+    climber2.Set(-1);
 
   }else{
 
