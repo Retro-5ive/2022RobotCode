@@ -19,7 +19,7 @@ class Robot : public frc::TimedRobot {
 double shooterSpeed = 0.25;
 
 //Talon drive motors initialization and groupings
-static const int leftFID = 2, leftBID = 4, rightFID = 1, rightBID = 5;
+static const int leftFID = 9, leftBID = 10, rightFID = 8, rightBID = 14;
 rev::CANSparkMax  m_leftF{leftFID, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax  m_leftB{leftBID, rev::CANSparkMax::MotorType::kBrushless};
 frc::SpeedControllerGroup left{m_leftF, m_leftB};
@@ -36,11 +36,8 @@ frc::DifferentialDrive tankDrive{left, right};    //make left side and right sid
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX intake{1};
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX shooter{0};
 ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber{2};
-ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber2{3};
-
-
-//SparkMax and Reg spark initialization
-frc::PWMSparkMax index{8};  //the number in the bracket is the port it's connected to in Roborio
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX climber2{7};
+ctre::phoenix::motorcontrol::can::WPI_TalonSRX index{4};
 
 
 //Joysticks instantiation
@@ -128,12 +125,29 @@ void TeleopPeriodic() override {  //this runs periodically throughout teleop
     tankDrive.TankDrive(leftStick.GetRawAxis(1), rightStick.GetRawAxis(1));  //axis 1 and 3 from drivePad are to gauge the drive
     intake.Set(leftStick.GetRawAxis(1));
 
-    //attach mechanisms to mechpad
-    index.Set(mechPad.GetRawButton(1));    //both in and out so button 1 for in button 3 for out
     shooterFunction();
     climberFunction();
     climber2Function();
+    indexFunction();
   }
+
+void indexFunction(){
+
+  if(mechPad.GetRawButton(1)){
+
+    index.Set(0.5);
+
+  }else if(mechPad.GetRawButton(3)){
+
+    index.Set(-0.5);
+
+  }else{
+
+    index.Set(0);
+
+  }
+}
+
 
 void shooterFunction(){
 
