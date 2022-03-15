@@ -5,7 +5,7 @@
 #include <frc/TimedRobot.h>
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonSRX.h>
 #include <frc/drive/DifferentialDrive.h>
-#include <frc/SpeedControllerGroup.h>
+#include <frc/motorcontrol/MotorControllerGroup.h>
 #include <frc/Joystick.h> 
 #include "rev/SparkMaxPIDController.h"
 #include <frc/motorcontrol/PWMSparkMax.h>
@@ -22,11 +22,11 @@ double shooterSpeed = 0.25;
 static const int leftFID = 9, leftBID = 10, rightFID = 8, rightBID = 14;
 rev::CANSparkMax  m_leftF{leftFID, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax  m_leftB{leftBID, rev::CANSparkMax::MotorType::kBrushless};
-frc::SpeedControllerGroup left{m_leftF, m_leftB};
+frc::MotorControllerGroup left{m_leftF, m_leftB};
 
 rev::CANSparkMax  m_rightF{rightFID, rev::CANSparkMax::MotorType::kBrushless};
 rev::CANSparkMax  m_rightB{rightBID, rev::CANSparkMax::MotorType::kBrushless};
-frc::SpeedControllerGroup right{m_rightF, m_rightB};
+frc::MotorControllerGroup right{m_rightF, m_rightB};
 
 
 frc::DifferentialDrive tankDrive{left, right};    //make left side and right side into one drive - tank drive
@@ -52,8 +52,7 @@ frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
 public:
 
 void RobotInit() override { //This runs on initialization of the robot during teleop
-
-    m_rightB.SetInverted(true);
+    right.SetInverted(true);
     timer.Reset();
     timer.Start();
 
@@ -125,33 +124,13 @@ void TeleopPeriodic() override {  //this runs periodically throughout teleop
     tankDrive.TankDrive(leftStick.GetRawAxis(1), rightStick.GetRawAxis(1));  //axis 1 and 1 from drivePad are to gauge the drive
     intake.Set(mechPad.GetRawAxis(1));
 
-<<<<<<< HEAD
     //attach mechanisms to mechpad
-    indexFunction();    //both in and out so button 1 for in button 3 for out
-=======
->>>>>>> 9cc3d284f6eca31f206659c7187b5df8b94d691b
+    //both in and out so button 1 for in button 3 for out
     shooterFunction();
     climberFunction();
     climber2Function();
     indexFunction();
   }
-
-void indexFunction(){
-
-  if(mechPad.GetRawButton(1)){
-
-    index.Set(0.5);
-
-  }else if(mechPad.GetRawButton(3)){
-
-    index.Set(-0.5);
-
-  }else{
-
-    index.Set(0);
-
-  }
-}
 
 
 void shooterFunction(){
