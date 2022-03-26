@@ -64,7 +64,7 @@ void TeleopPeriodic() override {  //this runs periodically throughout teleop
 
     // Drive with tank style using drivePad
     tankDrive.TankDrive(leftStick.GetRawAxis(1), rightStick.GetRawAxis(1));  //axis 1 and 1 from drivePad are to gauge the drive
-    intake.Set(mechPad.GetRawAxis(1));
+    
     //attach mechanisms to mechpad
     //both in and out so button 1 for in button 3 for out
     shooterFunction();
