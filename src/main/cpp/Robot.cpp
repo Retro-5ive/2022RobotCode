@@ -12,6 +12,7 @@
 #include <frc/Timer.h>
 #include <cameraserver/CameraServer.h>
 
+#include <frc/controller/PIDController.h>
 
 class Robot : public frc::TimedRobot {      
 
@@ -50,9 +51,8 @@ frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
  frc::Timer timer;
  int counter = 0;
 
-
-
-
+// Creates a PIDController with gains kP, kI, and kD
+frc2::PIDController pid{kP, kI, kD};
 
 public:
 
