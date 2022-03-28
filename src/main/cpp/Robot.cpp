@@ -10,14 +10,15 @@
 #include <frc/Joystick.h> 
 #include <frc/motorcontrol/PWMSparkMax.h>
 #include <frc/Timer.h>
+#include <cameraserver/CameraServer.h>
 
 
 class Robot : public frc::TimedRobot {      
 
-double shooterSpeed = 0.45;
+double shooterSpeed = 0.7;
 double indexSpeed = 0.5;
-double intakeSpeed = 0.5;
-int counter = 0;
+double intakeSpeed = 0.9;
+bool toggle{false};
 
 //Talon drive motors initialization and groupings
 static const int leftFID = 1, leftBID = 3, rightFID = 2, rightBID = 4;
@@ -36,8 +37,8 @@ frc::DifferentialDrive tankDrive{left, right};    //make left side and right sid
 //Talon mechanism motors initialization
 ctre::phoenix::motorcontrol::can::WPI_TalonFX shooter{7};
 ctre::phoenix::motorcontrol::can::WPI_TalonFX climber{9};
-ctre::phoenix::motorcontrol::can::WPI_TalonFX climber2{8};
-ctre::phoenix::motorcontrol::can::WPI_TalonFX index{6};
+ctre::phoenix::motorcontrol::can::WPI_TalonFX climber2{6};
+ctre::phoenix::motorcontrol::can::WPI_TalonFX index{8};
 ctre::phoenix::motorcontrol::can::WPI_TalonFX intake{5};
 
 //Joysticks instantiation
@@ -47,6 +48,10 @@ frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
 
 //timer
  frc::Timer timer;
+ int counter = 0;
+
+
+
 
 
 public:
@@ -55,7 +60,7 @@ void RobotInit() override { //This runs on initialization of the robot during te
     right.SetInverted(true);
     timer.Reset();
     timer.Start();
-
+    frc::CameraServer::StartAutomaticCapture();
   }
 
 
@@ -63,8 +68,8 @@ void RobotInit() override { //This runs on initialization of the robot during te
 void TeleopPeriodic() override {  //this runs periodically throughout teleop
 
     // Drive with tank style using drivePad
-    tankDrive.TankDrive(leftStick.GetRawAxis(1), rightStick.GetRawAxis(1));  //axis 1 and 1 from drivePad are to gauge the drive
-    
+    tankDrive.TankDrive(rightStick.GetRawAxis(1), leftStick.GetRawAxis(1));  //axis 1 and 1 from drivePad are to gauge the drive
+
     //attach mechanisms to mechpad
     //both in and out so button 1 for in button 3 for out
     shooterFunction();
@@ -77,28 +82,24 @@ void TeleopPeriodic() override {  //this runs periodically throughout teleop
 
 
 void shooterFunction(){ //velocity control for talonfx
+  
+  
+if (mechPad.GetRawButtonPressed(3)){
 
-  if(mechPad.GetRawButton(3)){
+  if(toggle){
+
+    shooter.Set(0);
+    toggle = false;
+
+  }else {
 
     shooter.Set(shooterSpeed);
-
-    if(counter = 0){
-
-      shooter.Set(shooterSpeed);
-
-    }else if(counter = 1){
-
-      shooter.Set(shooterSpeed);
-
-      counter = 1;
-
-    } else {
-
-      shooter.Set(0);
-      
-    }
+    toggle = true;
 
   }
+}
+
+  
 }
 
 void indexFunction(){
@@ -143,7 +144,7 @@ void climberFunction(){
  
     climber.Set(-1);
 
-  }else if(leftStick.GetRawButton(10)){  //leftstick button 1
+  }else if(leftStick.GetRawButton(1)){  //leftstick button 1
 
     climber.Set(1);
 
@@ -155,19 +156,20 @@ void climberFunction(){
 
 void climber2Function(){
 
-    if(rightStick.GetRawButton(3)){    //rightstick button 2
+    if(rightStick.GetRawButton(4)){    //rightstick button 2
 
-    climber2.Set(0.70);
+    climber2.Set(0.30);
 
-  }else if(leftStick.GetRawButton(4)){    //leftstick button 2
+  }else if(rightStick.GetRawButton(3)){    //leftstick button 2
 
-    climber2.Set(-0.70);
+    climber2.Set(-0.30);
 
   }else{
 
     climber2.Set(0);
   }
 }
+
 
 };
 
