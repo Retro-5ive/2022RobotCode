@@ -11,15 +11,17 @@
 #include <frc/motorcontrol/PWMSparkMax.h>
 #include <frc/Timer.h>
 #include <cameraserver/CameraServer.h>
-
 #include <frc/controller/PIDController.h>
+#include <ctre/Phoenix.h>
 
 class Robot : public frc::TimedRobot {      
 
-double shooterSpeed = 0.7;
-double indexSpeed = 0.5;
+double shooterTicks = 5550; //max is 5300
+double indexSpeed = 0.7;
 double intakeSpeed = 0.9;
 bool toggle{false};
+
+
 
 //Talon drive motors initialization and groupings
 static const int leftFID = 1, leftBID = 3, rightFID = 2, rightBID = 4;
@@ -51,8 +53,10 @@ frc::GenericHID mechPad{2};       //port 2 is a gamepad for mechanisms
  frc::Timer timer;
  int counter = 0;
 
-// Creates a PIDController with gains kP, kI, and kD
-frc2::PIDController pid{kP, kI, kD};
+ int kSlotIdx {0};
+ int kPIDLoopIdx {0};
+ int kTimeoutMs {10};
+
 
 public:
 
@@ -61,6 +65,22 @@ void RobotInit() override { //This runs on initialization of the robot during te
     timer.Reset();
     timer.Start();
     frc::CameraServer::StartAutomaticCapture();
+
+    //velocity control
+    shooter.ConfigFactoryDefault();
+
+    shooter.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, kTimeoutMs);
+    shooter.SetSensorPhase(true);
+
+    shooter.ConfigNominalOutputForward(0, kTimeoutMs);
+    shooter.ConfigNominalOutputReverse(0, kTimeoutMs);
+    shooter.ConfigPeakOutputForward(1, kTimeoutMs);
+    shooter.ConfigPeakOutputReverse(-1, kTimeoutMs);
+
+    shooter.Config_kF(kPIDLoopIdx, 0.5, kTimeoutMs); // tune this
+    shooter.Config_kP(kPIDLoopIdx, 0.5, kTimeoutMs);   // tune this
+    shooter.Config_kI(kPIDLoopIdx, 0.0, kTimeoutMs);
+    shooter.Config_kD(kPIDLoopIdx, 0.0, kTimeoutMs);
   }
 
 
@@ -71,7 +91,6 @@ void TeleopPeriodic() override {  //this runs periodically throughout teleop
     tankDrive.TankDrive(rightStick.GetRawAxis(1), leftStick.GetRawAxis(1));  //axis 1 and 1 from drivePad are to gauge the drive
 
     //attach mechanisms to mechpad
-    //both in and out so button 1 for in button 3 for out
     shooterFunction();
     indexFunction();
     intakeFunction();
@@ -93,7 +112,7 @@ if (mechPad.GetRawButtonPressed(3)){
 
   }else {
 
-    shooter.Set(shooterSpeed);
+    shooter.Set(TalonFXControlMode::Velocity, shooterTicks);
     toggle = true;
 
   }
@@ -158,11 +177,11 @@ void climber2Function(){
 
     if(rightStick.GetRawButton(4)){    //rightstick button 2
 
-    climber2.Set(0.30);
+    climber2.Set(0.50);
 
   }else if(rightStick.GetRawButton(3)){    //leftstick button 2
 
-    climber2.Set(-0.30);
+    climber2.Set(-0.50);
 
   }else{
 
